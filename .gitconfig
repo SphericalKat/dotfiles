@@ -1,0 +1,8 @@
+[user]
+	signingkey = DD0B4C26654BA8E4
+	name = SphericalKat
+	email = amolele@gmail.com
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
