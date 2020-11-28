@@ -111,8 +111,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 export PATH="$PATH":"$HOME/.pub-cache/bin"
-export PATH="$PATH":"/Users/sphericalkat/fvm/default/bin"
+export PATH="/Users/sphericalkat/Library/Application Support/fvm/current/bin:$PATH"
 export PATH=/usr/local/bin:$PATH
+export PATH=${PATH}:`go env GOPATH`/bin
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 export EDITOR=nano
 
