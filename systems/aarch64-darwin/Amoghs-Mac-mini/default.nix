@@ -24,6 +24,19 @@
   
   environment.systemPackages = with pkgs; [
     nh
+    zoxide
+    ansible
+    parallel
+    git
+    gh
+    just
+    ctags
+    ripgrep
+    fd
+    bat
+    cocoapods
+    fnm
+    nom
   ];
 
   # Home Manager configuration
@@ -36,14 +49,7 @@
   # Enable homebrew
   homebrew = {
     enable = true;
-    brews = [
-      "ansible"
-      "cocoapods"
-      "fnm"
-      "gh"
-      "just"
-      "parallel"
-    ];
+    brews = [];
     casks = [
       "alt-tab"
       "obsidian"
