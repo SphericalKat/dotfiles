@@ -9,6 +9,18 @@
       url = "github:snowfallorg/lib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nh.url = "github:nix-community/nh";
+    nh.inputs.nixpkgs.follows = "nixpkgs";
+
+    darwin.url = "github:LnL7/nix-darwin/master";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
+
+    devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs:
@@ -22,6 +34,6 @@
           name = "sphericalkat-nix-configs";
           title = "SphericalKat's Nix configurations";
         };
-      }
-    }
+      };
+    };
 }
