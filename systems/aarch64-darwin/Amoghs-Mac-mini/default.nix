@@ -26,6 +26,13 @@
     nh
   ];
 
+  # Home Manager configuration
+  home-manager = {
+    backupFileExtension = "bak";
+    useGlobalPkgs = true;
+    useUserPackages = true;
+  };
+
   # Enable homebrew
   homebrew = {
     enable = true;
