@@ -17,7 +17,10 @@ in
     };
     
     # Source the darwin-init script and other custom configurations
-    initExtra = ''
+    initContent = ''
+      # Set preferred editor
+      export EDITOR=vi
+      
       # Source the custom init script
       if [ -f "$HOME/dotfiles/${initScript}" ]; then
         source "$HOME/dotfiles/${initScript}"
