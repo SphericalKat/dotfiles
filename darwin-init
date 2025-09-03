@@ -40,6 +40,10 @@ if [ -d ~/go/bin ]; then
   export PATH="${HOME}/go/bin:${PATH}"
 fi
 
+if type fnm &>/dev/null; then
+  eval "$(fnm env --use-on-cd --corepack-enabled)"
+fi
+
 # # shellcheck source=scripts/bash_completions.bash disable=SC1091
 # source "${SCRIPT_DIR}"/bash_completions.bash
 # # shellcheck source=scripts/aliases disable=SC1091
