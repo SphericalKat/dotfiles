@@ -62,6 +62,7 @@
       "zed"
       "ghostty"
       "claude-code"
+      "figma"
     ];
     taps = [ ];
   };
