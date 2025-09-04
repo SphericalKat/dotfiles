@@ -9,19 +9,19 @@
   # System configuration
   system.stateVersion = 4;
   system.primaryUser = "sphericalkat";
-  
+
   # Fix nixbld group GID mismatch
   ids.gids.nixbld = 350;
-  
+
   users.users.sphericalkat = {
     name = "sphericalkat";
     home = "/Users/sphericalkat";
   };
-  
+
   environment.variables = {
     LANG = "en_US.UTF-8";
   };
-  
+
   environment.systemPackages = with pkgs; [
     nh
     zoxide
@@ -37,6 +37,7 @@
     cocoapods
     fnm
     nom
+    direnv
   ];
 
   # Home Manager configuration
@@ -49,7 +50,9 @@
   # Enable homebrew
   homebrew = {
     enable = true;
-    brews = [];
+    brews = [
+      "pgcli"
+    ];
     casks = [
       "alt-tab"
       "obsidian"
