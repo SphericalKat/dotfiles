@@ -13,6 +13,7 @@ export SDKMAN_DIR="${HOME}/.sdkman"
 # Local bin directory
 [ -d "${HOME}/bin" ] && export PATH="${HOME}/bin:${PATH}"
 
+source $HOME/.local/bin/env
 
 # Android, but macOS
 if [ -d "${HOME}"/Library/Android/sdk/ ]; then

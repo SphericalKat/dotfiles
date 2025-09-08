@@ -38,6 +38,7 @@
     fnm
     nom
     direnv
+    deno
   ];
 
   # Home Manager configuration
