@@ -1,4 +1,4 @@
-{ pkgs, namespace, lib, ... }:
+{ pkgs, namespace, lib, inputs, ... }:
 {
   # Nix configuration
   nix.settings = {
@@ -40,6 +40,8 @@
     direnv
     deno
     flyctl
+    inputs.nil.packages.aarch64-darwin.default
+    nixd
   ];
 
   # Home Manager configuration

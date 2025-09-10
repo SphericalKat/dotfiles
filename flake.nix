@@ -21,6 +21,8 @@
 
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
+    
+    nil.url = "github:oxalica/nil";
   };
 
   outputs = inputs:
