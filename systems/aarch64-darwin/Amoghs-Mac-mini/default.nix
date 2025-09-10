@@ -39,6 +39,7 @@
     nom
     direnv
     deno
+    flyctl
   ];
 
   # Home Manager configuration
