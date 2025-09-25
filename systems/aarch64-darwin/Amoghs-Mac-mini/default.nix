@@ -42,6 +42,7 @@
     flyctl
     inputs.nil.packages.aarch64-darwin.default
     nixd
+    moon
   ];
 
   # Home Manager configuration
@@ -56,6 +57,8 @@
     enable = true;
     brews = [
       "pgcli"
+      "codex"
+      "watchman"
     ];
     casks = [
       "alt-tab"
