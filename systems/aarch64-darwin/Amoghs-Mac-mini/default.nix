@@ -43,6 +43,8 @@
     inputs.nil.packages.aarch64-darwin.default
     nixd
     moon
+    localstack
+    bun
   ];
 
   # Home Manager configuration
