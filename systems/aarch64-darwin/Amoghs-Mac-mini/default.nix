@@ -45,6 +45,7 @@
     moon
     localstack
     bun
+    jujutsu
   ];
 
   # Home Manager configuration
@@ -61,6 +62,7 @@
       "pgcli"
       "codex"
       "watchman"
+      "hashicorp/tap/terraform"
     ];
     casks = [
       "alt-tab"
@@ -76,6 +78,8 @@
       "claude-code"
       "figma"
     ];
-    taps = [ ];
+    taps = [
+      "hashicorp/tap"
+    ];
   };
 }

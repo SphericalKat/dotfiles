@@ -67,3 +67,5 @@ fi
 # source "${SCRIPT_DIR}"/system
 # # shellcheck source=scripts/system_darwin disable=SC1091
 # source "${SCRIPT_DIR}"/system_darwin
+
+source <(COMPLETE=zsh jj)
