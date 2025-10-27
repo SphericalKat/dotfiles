@@ -33,6 +33,10 @@
       channels-config = {
         allowUnfree = true;
       };
+      
+      templates = {
+        go.description = "devshell for a Golang project";
+      };
 
       snowfall = {
         namespace = "sphericalkat";
