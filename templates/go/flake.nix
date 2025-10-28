@@ -1,7 +1,7 @@
 {
   description = "devshell for a Golang project";
 
-  inputs.nixpkgs.url = "github:msfjarvis/nixpkgs/nixpkgs-unstable";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
   inputs.systems.url = "sourcehut:~sphericalkat/flake-systems";
 
