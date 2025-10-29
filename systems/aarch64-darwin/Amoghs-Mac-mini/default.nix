@@ -46,6 +46,7 @@
     localstack
     bun
     jujutsu
+    terragrunt
   ];
 
   # Home Manager configuration
