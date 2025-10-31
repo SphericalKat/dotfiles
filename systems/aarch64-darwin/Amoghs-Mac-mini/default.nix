@@ -47,6 +47,7 @@
     bun
     jujutsu
     terragrunt
+    aerc
   ];
 
   # Home Manager configuration
