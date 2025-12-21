@@ -48,6 +48,12 @@
     jujutsu
     terragrunt
     aerc
+    goreleaser
+    supersonic
+    halloy
+    slides
+    presenterm
+    sops
   ];
 
   # Home Manager configuration
