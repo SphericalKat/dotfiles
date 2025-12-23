@@ -54,6 +54,7 @@
     slides
     presenterm
     sops
+    redis
   ];
 
   # Home Manager configuration
