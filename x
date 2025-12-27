@@ -135,9 +135,8 @@ main() {
     done
     if [[ "$(uname)" == "Darwin" ]]; then
       run_command sudo darwin-rebuild switch --option sandbox false --print-build-logs --flake .
-    if type home-manager &>/dev/null; then
+    elif type home-manager &>/dev/null; then
       run_command home-manager switch --flake .
-    fi
     else
       if [[ $local_build == "true" ]]; then
         local max_jobs
