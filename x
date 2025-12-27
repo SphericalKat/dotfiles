@@ -135,7 +135,7 @@ main() {
     done
     if [[ "$(uname)" == "Darwin" ]]; then
       run_command sudo darwin-rebuild switch --option sandbox false --print-build-logs --flake .
-    elif type home-manager &>/dev/null; then
+    elif [[ "$(uname -s)" == "Linux" && ! -f /etc/NIXOS ]]; then
       run_command home-manager switch --flake .
     else
       if [[ $local_build == "true" ]]; then
