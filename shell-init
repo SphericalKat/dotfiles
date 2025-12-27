@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Copyright (C) Harsh Shandilya <me@msfjarvis.dev>
+# SPDX-License-Identifier: MIT
+
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)/scripts"
+
+# shellcheck disable=SC1091
+if [ -e "${HOME}"/.nix-profile/etc/profile.d/nix.sh ]; then
+  source "${HOME}"/.nix-profile/etc/profile.d/nix.sh
+fi
+
+# Local bin directory
+[ -d "${HOME}/bin" ] && export PATH="${HOME}/bin:${PATH}"
+
+# SDKMAN!
+export SDKMAN_DIR="${HOME}/.sdkman"
+# shellcheck disable=SC1091
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
+# cargo env
+# shellcheck disable=SC1091
+if [ -f "${HOME}"/.cargo/env ]; then
+  source "${HOME}"/.cargo/env
+fi
+
+# Android env variables
+if [ -d ~/Android/Sdk ]; then
+  export ANDROID_HOME=~/Android/Sdk
+fi
+
+# Sexy colors in `ls`
+if type vivid &>/dev/null; then
+  LS_COLORS="$(vivid generate catppuccin-mocha)"
+  export LS_COLORS
+fi
+
+# Setup zoxide
+if type zoxide &>/dev/null; then
+  alias cd=z
+  # zoxide 0.9.7 spams me
+  export _ZO_DOCTOR=0
+fi
+
+source "${SCRIPT_DIR}"/nix
+source "${SCRIPT_DIR}"/files

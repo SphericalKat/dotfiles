@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Copyright (C) Harsh Shandilya <me@msfjarvis.dev>
+# SPDX-License-Identifier: MIT 
+
+function dl() {
+  local URL FILE_NAME
+  declare -a CONFIGURATION=("--split=16" "--max-connection-per-server=16" "--summary-interval=0" "--auto-file-renaming=false")
+  URL="${1}"
+  FILE_NAME="${2}"
+  if [[ ${URL} =~ magnet ]] || [[ ${URL} =~ \.torrent ]]; then
+    CONFIGURATION+=("--seed-time=1m")
+  fi
+  if [ -f "${URL}" ]; then
+    aria2c "${CONFIGURATION[@]}" --input-file "${URL}"
+  elif [ -z "${FILE_NAME}" ]; then
+    aria2c "${CONFIGURATION[@]}" "${URL:?}"
+  else
+    aria2c "${CONFIGURATION[@]}" "${URL:?}" -o "${FILE_NAME}"
+  fi
+}
+
+function link() {
+  local SRC DEST ROOT PWD
+  SRC="${1}"
+  DEST="${2}"
+  ROOT="${3}"
+  PWD="$(pwd)"
+  case "${SRC:?}" in
+  /*) ;; # No action needed
+  *) SRC="${PWD}"/"${SRC:?}" ;;
+  esac
+  if [ -z "${ROOT}" ]; then
+    ln -sf "${SRC:?}" "${DEST:?}"
+  else
+    sudo ln -sf "${SRC:?}" "${DEST:?}"
+  fi
+}
+
+function mkgif() {
+  ffmpeg -i "${1:?}" -vf "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 "${1%.*}".gif
+}
+

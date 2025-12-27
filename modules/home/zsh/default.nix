@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let 
-  initScript = if pkgs.stdenv.hostPlatform.isDarwin then "darwin-init" else "linux-init";
+  initScript = if pkgs.stdenv.hostPlatform.isDarwin then "darwin-init" else "shell-init";
 in
 {
   programs.zsh = {
@@ -19,7 +19,7 @@ in
     # Source the darwin-init script and other custom configurations
     initContent = ''
       # Set preferred editor
-      export EDITOR=vi
+      export EDITOR=nano
       
       # Source the custom init script
       if [ -f "$HOME/dotfiles/${initScript}" ]; then
