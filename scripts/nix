@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+# Copyright (C) Harsh Shandilya <me@msfjarvis.dev>
+# SPDX-License-Identifier: MIT
+
+function nixpatch() {
+  [ -z "${1}" ] && return
+  local glibc_path
+  glibc_path="$(nix eval --raw nixpkgs#glibc.outPath)"
+  comma patchelf --set-interpreter "${glibc_path}/lib/ld-linux-x86-64.so.2" "${1}"
+}
+
+function nixdiff() {
+  local CUR_GEN OLD_GEN
+  case "$(uname)" in
+  "Darwin")
+    CUR_GEN="$(fd -j1 --max-depth 1 -tl system- /nix/var/nix/profiles/ | tail -n1)"
+    OLD_GEN="$(fd -j1 --max-depth 1 -tl system- /nix/var/nix/profiles/ | tail -n2 | head -n1)"
+    ;;
+  "Linux")
+    if [[ -n "$(command -v home-manager)" ]]; then
+      CUR_GEN="$(fd -j1 --max-depth 1 -tl home-manager- ~/.local/state/nix/profiles/ | tail -n1)"
+      OLD_GEN="$(fd -j1 --max-depth 1 -tl home-manager- ~/.local/state/nix/profiles/ | head -n1)"
+    else
+      GEN_COUNT="$(($(nixos-rebuild --no-reexec list-generations --json | jq length)))"
+      if [[ $GEN_COUNT -ge 2 || -d ./result ]]; then
+        CUR_GEN_NUM="$(nixos-rebuild --no-reexec list-generations --json | jq .[0].generation)"
+        OLD_GEN_NUM="$(nixos-rebuild --no-reexec list-generations --json | jq .[1].generation)"
+        CUR_GEN="/nix/var/nix/profiles/system-${CUR_GEN_NUM}-link"
+        OLD_GEN="/nix/var/nix/profiles/system-${OLD_GEN_NUM}-link"
+      else
+        echoText "No generations to diff"
+        return
+      fi
+    fi
+    ;;
+  esac
+  if [ -d ./result ]; then
+    OLD_GEN="${CUR_GEN}"
+    CUR_GEN=./result
+  fi
+  nvd diff "${OLD_GEN}" "${CUR_GEN}"
+}
+
+function nixb() {
+  nix flake update --commit-lock-file
+}
+
+function cache() {
+  set -- "${1:-$(</dev/stdin)}" "${@:2}"
+  declare -a CACHE_PATHS
+  local ARCH KERNEL
+  CACHE_PATHS=("$@")
+  ARCH="$(uname -m)"
+  KERNEL="$(uname --kernel-name | tr '[:upper:]' '[:lower:]')"
+  attic push --filter '^((steam|appimage)-(run|fhs)(-run)?|(google-chrome|nvidia|android-studio|firefox-nightly-bin|index-).*)$' "${ARCH}-${KERNEL}" "${CACHE_PATHS[@]:?}"
+}
+
+function flakerev() {
+  local INPUT
+  INPUT="${1:-nixpkgs}"
+  jq -r ".flakes[] | select(.from.id == \"${INPUT}\") | .to.rev" /etc/nix/registry.json
+}
+
+function modinit() {
+  local MODULE_DESC MODULE_NAME MODULE_TYPE MODULE_PATH
+  read -rp "Module type? (e.g. programs/services): " MODULE_TYPE
+  read -rp "Name?: " MODULE_NAME
+  read -rp "Desc?: " MODULE_DESC
+  MODULE_PATH="modules/nixos/${MODULE_TYPE}/${MODULE_NAME}/"
+  mkdir -p "${MODULE_PATH}"
+  \cat <<EOF >"${MODULE_PATH}/default.nix"
+{
+  config,
+  lib,
+  namespace,
+  ...
+}:
+let
+  cfg = config.${MODULE_TYPE}.\${namespace}.${MODULE_NAME};
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    ;
+in
+{
+  options.${MODULE_TYPE}.\${namespace}.${MODULE_NAME} = {
+    enable = mkEnableOption "${MODULE_DESC}";
+    domain = mkOption {
+      type = types.str;
+      description = "Domain name to expose server on";
+      default = null;
+    };
+  };
+  config = mkIf cfg.enable { };
+}
+EOF
+}
+
+function flakechanges() {
+  # Use provided commit hash or find the latest flake.lock update commit
+  local COMMIT INPUT_NAME FROM_URL TO_URL
+
+  if [[ -n $1 ]]; then
+    COMMIT="$1"
+  else
+    COMMIT=$(git log -n 1 --grep="flake.lock: Update" --format="%H")
+  fi
+
+  if [[ -z $COMMIT ]]; then
+    echo "No 'flake.lock: Update' commit found"
+    return 1
+  fi
+
+  echo "Found flake.lock update commit: $COMMIT"
+  echo
+
+  # Extract the commit message to get the input changes
+  local COMMIT_MSG
+  COMMIT_MSG=$(git show -s --format=%B "$COMMIT")
+
+  # This will collect all input changes from the commit message
+  echo "Input changes:"
+  echo "-------------"
+
+  # Process the commit message and extract GitHub compare URLs
+  local capturing=false first_url=false
+
+  while IFS= read -r line; do
+    # Start capturing when we find an input line
+    if [[ $line == "• Updated input "* ]]; then
+      # Extract the input name between single quotes
+      INPUT_NAME=$(echo "$line" | sed -n "s/• Updated input '\([^']*\)':.*/\1/p")
+      capturing=true
+      first_url=true
+      FROM_URL=""
+      TO_URL=""
+      continue
+    fi
+
+    # Extract URLs from multi-line format
+    if [[ $capturing == true && $line == *"'"* ]]; then
+      # Extract the URL between single quotes
+      local URL
+      URL=$(echo "$line" | grep -o "'[^']*'" | sed "s/'//g")
+
+      if [[ $URL == github:* ]]; then
+        if [[ $first_url == true ]]; then
+          FROM_URL=$URL
+          first_url=false
+        elif [[ $line == *"→"* ]]; then
+          TO_URL=$URL
+        fi
+      fi
+    fi
+
+    # When we reach a line with "→" and we have both URLs, process them
+    if [[ $capturing == true && $line == *"→"* && -n $FROM_URL && -n $TO_URL ]]; then
+      # Check if these are GitHub URLs
+      if [[ $FROM_URL == github:* && $TO_URL == github:* ]]; then
+        # Extract owner, repo, and commit hashes
+        local OWNER REPO FROM_COMMIT TO_COMMIT
+        OWNER=$(echo "$FROM_URL" | sed -n 's/github:\([^\/]*\)\/.*/\1/p')
+        REPO=$(echo "$FROM_URL" | sed -n 's/github:[^\/]*\/\([^\/]*\)\/.*/\1/p')
+        FROM_COMMIT=$(echo "$FROM_URL" | sed -n 's/github:[^\/]*\/[^\/]*\/\([^?]*\).*/\1/p')
+        TO_COMMIT=$(echo "$TO_URL" | sed -n 's/github:[^\/]*\/[^\/]*\/\([^?]*\).*/\1/p')
+
+        # Create GitHub compare URL
+        local COMPARE_URL
+        COMPARE_URL="https://github.com/$OWNER/$REPO/compare/$FROM_COMMIT...$TO_COMMIT"
+        printf "%-25s %s\n" "$INPUT_NAME:" "$COMPARE_URL"
+      else
+        printf "%-25s %s\n" "$INPUT_NAME:" "Not a GitHub URL or couldn't parse"
+        printf "  From: %s\n" "$FROM_URL"
+        printf "  To:   %s\n" "$TO_URL"
+      fi
+
+      # Reset for next input
+      capturing=false
+    fi
+
+    # If we encounter a new input line, stop capturing the current one
+    if [[ $capturing == true && $line == "• Updated input "* ]]; then
+      capturing=false
+    fi
+  done <<<"$COMMIT_MSG"
+
+  # Print a helpful message if no changes were found
+  if [[ -z $INPUT_NAME ]]; then
+    echo "No input changes found in the commit message."
+    echo "The commit might have a different format than expected."
+  fi
+}
+
+function flakeinputs() {
+  local FLAKE TMP PATHS P NAME
+  FLAKE="${1:-.}"
+  TMP="$(mktemp -d -t flake-inputs.XXXXXX)"
+
+  # Use nix flake archive to efficiently enumerate all input store paths
+  if ! PATHS="$(nix flake archive --json "${FLAKE}" 2>/dev/null | jq -r '.. | .path? // empty' 2>/dev/null | sort -u)"; then
+    echo "Failed to archive flake '${FLAKE}'"
+    return 1
+  fi
+
+  if [[ -z ${PATHS} ]]; then
+    echo "No store paths found for '${FLAKE}'"
+    return 1
+  fi
+
+  # Copy each path into the temp directory, using the store basename as folder name
+  for P in ${PATHS}; do
+    NAME="$(basename "${P}")"
+    cp -a "${P}" "${TMP}/${NAME}"
+  done
+
+  cd "${TMP}" || return
+  echo "Archived flake inputs into: ${TMP}"
+}
