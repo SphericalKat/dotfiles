@@ -136,7 +136,7 @@ main() {
     if [[ "$(uname)" == "Darwin" ]]; then
       run_command sudo darwin-rebuild switch --option sandbox false --print-build-logs --flake .
     elif [[ "$(uname -s)" == "Linux" && ! -f /etc/NIXOS ]]; then
-      run_command home-manager switch --flake .
+      run_command home-manager switch -b backup --flake .
     else
       if [[ $local_build == "true" ]]; then
         local max_jobs

@@ -22,6 +22,9 @@
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     
+    zig.url = "github:mitchellh/zig-overlay";
+    zig.inputs.nixpkgs.follows = "nixpkgs";
+    
     nil.url = "github:oxalica/nil";
   };
 
@@ -29,6 +32,10 @@
     inputs.snowfall-lib.mkFlake {
       inherit inputs;
       src = ./.;
+      
+      overlays = with inputs; [
+        zig.overlays.default
+      ];
 
       channels-config = {
         allowUnfree = true;

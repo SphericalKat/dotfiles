@@ -8,6 +8,7 @@
   
   home.packages = with pkgs; [
     fnm
+    pkgs.zigpkgs.master
   ];
   
   # profiles.${namespace} = {
