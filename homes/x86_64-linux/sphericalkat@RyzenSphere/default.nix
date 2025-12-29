@@ -1,4 +1,4 @@
-{ pkgs, namespace, ... }: {
+{ pkgs, namespace, inputs, system, ... }: {
   snowfallorg.user = {
     enable = true;
     name = "sphericalkat";
@@ -8,7 +8,8 @@
   
   home.packages = with pkgs; [
     fnm
-    pkgs.zigpkgs.master
+    zigpkgs.master
+    zls
   ];
   
   # profiles.${namespace} = {
