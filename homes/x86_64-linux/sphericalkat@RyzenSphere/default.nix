@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, namespace, ... }: {
   snowfallorg.user = {
     enable = true;
     name = "sphericalkat";
@@ -9,4 +9,17 @@
   home.packages = with pkgs; [
     fnm
   ];
+  
+  # profiles.${namespace} = {
+  #   ghostty = {
+  #     enable = true;
+  #     settings = {
+  #       bold-is-bright = true;
+  #       font-family = "JetBrainsMono Nerd Font Mono";
+  #       shell-integration = "zsh";
+  #       window-width = 244;
+  #       window-height = 58;
+  #     };
+  #   };
+  # };
 }
