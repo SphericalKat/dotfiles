@@ -8,8 +8,6 @@
   
   home.packages = with pkgs; [
     fnm
-    zigpkgs.master
-    zls
   ];
   
   # profiles.${namespace} = {

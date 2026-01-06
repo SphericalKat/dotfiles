@@ -69,3 +69,5 @@ fi
 # source "${SCRIPT_DIR}"/system_darwin
 
 source <(COMPLETE=zsh jj)
+
+export PATH=/Users/sphericalkat/.opencode/bin:$PATH
