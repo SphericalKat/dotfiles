@@ -43,7 +43,6 @@
     inputs.nil.packages.aarch64-darwin.default
     nixd
     moon
-    localstack
     bun
     jujutsu
     terragrunt
@@ -55,6 +54,7 @@
     presenterm
     sops
     redis
+    lftp
   ];
 
   # Home Manager configuration
@@ -69,7 +69,6 @@
     enable = true;
     brews = [
       "pgcli"
-      "codex"
       "watchman"
       "hashicorp/tap/terraform"
     ];
