@@ -13,6 +13,7 @@ in
       plugins = [
         "git"
         "history"
+        "yarn"
       ];
     };
     

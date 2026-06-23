@@ -72,7 +72,7 @@ source <(COMPLETE=zsh jj)
 
 export PATH=/Users/sphericalkat/.opencode/bin:$PATH
 
-alias pclaude="CLAUDE_CONFIG_DIR=~/.claude-personal SHELL=/bin/bash claude"
+alias pclaude="CLAUDE_CONFIG_DIR=~/.claude-personal SHELL=/bin/bash ~/.local/bin/claude"
 alias wclaude="CLAUDE_CONFIG_DIR=~/.claude-work SHELL=/bin/bash claude"
 source $HOME/.cargo/env
 
@@ -82,3 +82,5 @@ if [ -f '/Users/sphericalkat/altilium/clinic-app/google-cloud-sdk/path.zsh.inc' 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/sphericalkat/altilium/clinic-app/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/sphericalkat/altilium/clinic-app/google-cloud-sdk/completion.zsh.inc'; fi
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export PATH="$HOME/fvm/default/bin:$PATH"
+PATH="$PATH:$HOME/.pub-cache/bin"

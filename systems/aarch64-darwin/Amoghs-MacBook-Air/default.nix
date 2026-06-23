@@ -23,7 +23,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    nh
     zoxide
     ansible
     parallel

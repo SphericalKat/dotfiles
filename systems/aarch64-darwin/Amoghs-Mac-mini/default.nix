@@ -23,7 +23,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    nh
     zoxide
     ansible
     parallel
@@ -42,11 +41,9 @@
     flyctl
     inputs.nil.packages.aarch64-darwin.default
     nixd
-    moon
     bun
     jujutsu
     terragrunt
-    aerc
     goreleaser
     supersonic
     halloy

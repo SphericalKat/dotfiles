@@ -7,5 +7,8 @@
     zig
     zls
     maestro
+    cargo-dist
+    typst
+    typst-live
   ];
 }
